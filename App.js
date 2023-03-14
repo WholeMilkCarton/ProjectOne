@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { StyleSheet, View, Button, TextInput, FlatList } from 'react-native';
+
+import GoalItem from './components/GoalItem';
 
 export default function App() {
   const [enteredGoalText, setEnteredGoalText] = useState('');
+  //CourseGoals is the array. 
   const [courseGoals, setCourseGoals] = useState([]);
 
   function goalInputHandler(enteredText) {
@@ -12,7 +15,8 @@ export default function App() {
   function addGoalHandler() {
     setCourseGoals((currentCourseGoals) => [
       ...currentCourseGoals,
-      enteredGoalText,
+      /////enteredGoalText comes from courseGoals array where the string of the goal comes from. you can add a key to this so you dont get warning
+      { text: enteredGoalText, id: Math.random().toString() },
     ]);
   }
 
@@ -25,9 +29,19 @@ export default function App() {
           onChangeText={goalInputHandler} 
           />
           <Button title="Add Goal" onPress={addGoalHandler} />
-      </View>
+        </View>
       <View style={styles.goalsContainer}>
-        {courseGoals.map((goal) => <Text key={goal}>{goal}</Text>)}
+        <FlatList 
+          data={courseGoals}
+          renderItem={(itemData) => {
+            itemData.index
+              return <GoalItem text={itemData.item.text} />;
+          }}
+          keyExtractor={(item, index) => {
+            return item.id;
+          }}
+          alwaysBounceVertical={false}
+        />
       </View>
     </View>
   );
@@ -57,5 +71,5 @@ const styles = StyleSheet.create({
   },
   goalsContainer: {
     flex: 5,
-  },
+  }
 });
